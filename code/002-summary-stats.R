@@ -36,8 +36,6 @@ dashboardData <- read_csv(here("data", "2021-dashboard.csv")) %>%
 
 # Opt-out Descriptives------------------------------------------------------
 
-# Overall by age, sex-------------------------------------------------------
-
 # June - July 2021 - overall, age, sex
 junJulDescriptives <- dashboardData %>% 
   filter(orgName == "England") %>% 
@@ -47,7 +45,6 @@ junJulDescriptives <- dashboardData %>%
   summarise(totalJun = count[1], totalJul = count[2], popJun = population[1], popJul = population[2], percJun = rate[1], percJul = rate[2], countDiff = count[2] - count[1], percChange = 100*(rate[2]/rate[1])-100) %>%
   ungroup()
 
-# Age plot------------------------------------------------------------------
 # Age
 junJulAgeSex1 <- junJulDescriptives %>% 
   select(group, percJun, percJul) %>% 
@@ -82,7 +79,6 @@ agePlot <- ageTrend %>%
 
 agePlot
 
-# Sex plot------------------------------------------------------------------
 # Sex
 list <- c("Female", "Male")
 sexTrend <- junJulAgeSex %>% 
@@ -102,7 +98,6 @@ sexPlot <- sexTrend %>%
 
 sexPlot
 
-# Combine plots & save--------------------------------------------------------
 combined <- 
   cowplot::plot_grid(agePlot, sexPlot, labels = c('A', 'B'), ncol=2, nrow=1, align = 'h')
 
@@ -112,8 +107,6 @@ ggsave(combined,
          here("output", "figs", 
               "opt-out-age-sex-combined.png"),
        width=20, height=15, units="cm")
-
-# CCG-------------------------------------------------------------------------
 
 # June - July 2021 - ccg (Unallocated included for table but not plot)
 list <- c("England", "North East and Yorkshire", "North West", "East of England", "Midlands", "South East", "South West", "London")
@@ -140,6 +133,18 @@ junJulRegion <- dashboardData %>%
 ## Save
 # Overall, age, sex before and after June/July
 write_csv(junJulDescriptives, here("output","tables", "overall_before_after.csv"))
+
+plot <-junJulCCG %>%
+  filter(orgName != "Unallocated") %>% 
+  filter()
+  ggplot(aes(percJun,reorder(orgName, percJun))) +
+  geom_segment(aes(yend = orgName, x = percJul, xend = percJun), colour="blue") +
+  geom_point(colour="blue", fill = "blue") +
+  theme_bw() +
+  xlab('% Opt-out June') +
+  ylab('CCGs') 
+
+plot
 
 # CCG before and after June/July
 # Sort top 10 highest rate Before
@@ -204,3 +209,40 @@ ccgIncrease <- rbind(ccgIncrease_top10, ccgIncrease_bot10) %>%
 
 write_csv(ccgIncrease, here("output","tables", "ccg_increase.csv"))
 
+# CCG before and after June/July
+# Sort top 10 highest rate Before
+ccgBefore_top20 <- junJulCCG %>% 
+  filter(!is.na(popJul)) %>%
+  arrange(-percJul) %>%
+  slice(1:20) %>%
+  mutate(ten = "top") 
+
+# Sort bottom 10 highest rate Before
+ccgBefore_bot20 <- junJulCCG %>% 
+  filter(!is.na(popJul)) %>%
+  arrange(percJul) %>%
+  slice(1:20) %>%
+  mutate(ten = "bottom")
+
+ccg_20 <- rbind(ccgBefore_bot20,ccgBefore_top20)
+
+plot <-ccg_20 %>%
+  filter(orgName != "Unallocated") %>% 
+  mutate(ten = ifelse(ten == "bottom", "Lowest 20 opt-outs", "Highest 20 opt-outs")) %>% 
+  ggplot(aes(percJul,reorder(orgName, percJul), size = percChange, col = ten)) +
+  geom_point() +
+  theme_bw() +
+  xlab('Opt-out %') +
+  ylab('Clinical commissioning group') +
+  geom_hline(yintercept = 20.5, lty = 2) +
+  scale_x_continuous(breaks = seq(0, 12, by = 3), limits = c(0,12)) +
+  labs(size ="Increase (%)", color = "Rank" ) +
+  scale_color_manual(breaks = c('Lowest 20 opt-outs', 'Highest 20 opt-outs'), values = c('#DC9549', '#5954D6'))
+
+plot
+
+ggsave(plot, 
+       filename = 
+         here("output", "figs", 
+              "ccg-top-20.png"),
+       width=25, height=25, units="cm")
