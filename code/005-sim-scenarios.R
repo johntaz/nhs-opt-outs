@@ -4,7 +4,7 @@ library(purrr)
 library(dplyr)
 library(ggplot2)
 
-output_directory <- here::here("output", "figs")
+output_directory <- here::here("output", "figs/")
 
 # Sim data for opt-outs ---------------------------------------------------
 set.seed <- 7
@@ -12,8 +12,8 @@ n <- 1e7
 
 df <- data.frame(
   id = 1:n, 
-  anxiety = sample(c(T, F), size = n, replace = TRUE), 
-  rare_cancer = sample(c(T, F), size = n, replace = TRUE),
+  anxiety = sample(c(T, F), size = n, replace = TRUE, prob = c(0.1, 0.9)), 
+  rare_cancer = sample(c(T, F), size = n, replace = TRUE, prob = c(0.01, 0.99)),
   age = sample(5:95, size = n, replace = TRUE)
 )
 
@@ -161,12 +161,15 @@ capture.output(
   },
   file = paste0(output_directory, "opt_out_tables.txt")
 )
+data_for_csv <- rbind.data.frame(tab, tab1, tab2, tab3, tab4)
+data_for_csv$false_pc <- paste(prettyNum(data_for_csv$`FALSE`, big.mark = ","), data_for_csv[,2])
+data_for_csv$true_pc <- paste(prettyNum(data_for_csv$`TRUE`, big.mark = ","), data_for_csv[,4])
 
-write.csv(rbind(tab, tab1, tab2, tab3, tab4), paste0(output_directory, "opt_out_tables_rawnumbers.csv"))
+write.csv(data_for_csv, paste0(output_directory, "opt_out_tables_rawnumbers.csv"))
 
 # sample size calc for a single rate --------------------------------------
 samplesize_n_for_singlerate <- function(n = 2e7,
-                                        mu = 0.82,
+                                        mu = 1.22,
                                         mu0 = 1,
                                         alpha = 0.05){
   # all done assuming rates per 100,000 person-years so convert n to n-years
@@ -179,7 +182,7 @@ samplesize_n_for_singlerate <- function(n = 2e7,
   power <- (1-pnorm(u, lower.tail = FALSE))*100
   power
 }
-samplesize_n_for_singlerate() # ~80%
+samplesize_n_for_singlerate() # ~80% power to detect change to 1.22
 
 base_n <- 2e7
 opt_out_line <- data.frame(
@@ -194,7 +197,7 @@ p2 <- ggplot(opt_out_line, aes(x=opt_outs, y = opt_out_pwr)) +
        subtitle = "Test of a single rate",
        x = "% of people with opt-out",
        y = "Power of comparison of 2 proportions", 
-       caption = "Population size = 20 million, Observed rate = 0.82/100,000 person-years, null hypothesis value = 1, sig. level = 5%") + 
+       caption = "Population size = 20 million, Observed rate = 1.22/100,000 person-years, null hypothesis value = 1, sig. level = 5%") + 
   theme_classic()
 jpeg( paste0(output_directory, "opt-out-power-singlerate.jpeg"), width = 7, height = 3, units = "in", res = 800)
   p2

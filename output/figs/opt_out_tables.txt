@@ -1,0 +1,45 @@
+------------------------------ 
+A: True association 
+Column percent 
+       Rare cancer
+Anxiety    FALSE      %   TRUE      %
+  FALSE  8910880   (90)  89670   (90)
+  TRUE    989453   (10)   9997   (10)
+  Total  9900333  (100)  99667  (100)
+
+------------------------------ 
+B: 5% opt-outs ~ anxiety 
+Column percent 
+       Rare cancer
+Anxiety    FALSE       %   TRUE       %
+  FALSE  8910880  (90.5)  89670  (90.4)
+  TRUE    940472   (9.5)   9510   (9.6)
+  Total  9851352   (100)  99180   (100)
+
+------------------------------ 
+C: 5% opt-outs ~ rare cancer 
+Column percent 
+       Rare cancer
+Anxiety    FALSE      %   TRUE      %
+  FALSE  8910880   (90)  85295   (90)
+  TRUE    989453   (10)   9517   (10)
+  Total  9900333  (100)  94812  (100)
+
+------------------------------ 
+D: 1% opt-out if anxiety OR rare cancer, 5% if neither 
+Column percent 
+       Rare cancer
+Anxiety    FALSE       %   TRUE      %
+  FALSE  8464669  (89.6)  88740   (90)
+  TRUE    979524  (10.4)   9900   (10)
+  Total  9444193   (100)  98640  (100)
+
+------------------------------ 
+E: 5% opt-out if anxiety OR rare cancer, 1% if neither 
+Column percent 
+       Rare cancer
+Anxiety    FALSE       %   TRUE       %
+  FALSE  8822142  (90.4)  85177  (89.9)
+  TRUE    940207   (9.6)   9541  (10.1)
+  Total  9762349   (100)  94718   (100)
+
