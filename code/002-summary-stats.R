@@ -136,7 +136,6 @@ write_csv(junJulDescriptives, here("output","tables", "overall_before_after.csv"
 
 plot <-junJulCCG %>%
   filter(orgName != "Unallocated") %>% 
-  filter()
   ggplot(aes(percJun,reorder(orgName, percJun))) +
   geom_segment(aes(yend = orgName, x = percJul, xend = percJun), colour="blue") +
   geom_point(colour="blue", fill = "blue") +
@@ -147,77 +146,77 @@ plot <-junJulCCG %>%
 plot
 
 # CCG before and after June/July
-# Sort top 10 highest rate Before
-ccgBefore_top10 <- junJulCCG %>% 
+# Sort top 20 highest rate Before
+ccgBefore_top20 <- junJulCCG %>% 
   filter(!is.na(popJul)) %>%
   arrange(-percJun) %>%
-  slice(1:10) %>%
-  mutate(ten = "top") 
+  slice(1:20) %>%
+  mutate(twenty = "top") 
 
-# Sort bottom 10 highest rate Before
-ccgBefore_bot10 <- junJulCCG %>% 
+# Sort bottom 20 highest rate Before
+ccgBefore_bot20 <- junJulCCG %>% 
   filter(!is.na(popJul)) %>%
   arrange(percJun) %>%
-  slice(1:10) %>%
-  mutate(ten = "bottom")
+  slice(1:20) %>%
+  mutate(twenty = "bottom")
 
 # Combine
-ccgBefore <-rbind(ccgBefore_top10, ccgBefore_bot10) %>%
+ccgBefore <-rbind(ccgBefore_top20, ccgBefore_bot20) %>%
   arrange(-percJun)
 
 write_csv(ccgBefore,here("output","tables", "ccg_before.csv"))
 
 # Sort by highest rate After
-# Sort top 10 highest rate After
-ccgAfter_top10 <- junJulCCG %>% 
+# Sort top 20 highest rate After
+ccgAfter_top20 <- junJulCCG %>% 
   filter(!is.na(popJul)) %>%
   arrange(-percJul) %>%
-  slice(1:10) %>%
-  mutate(ten = "top") 
+  slice(1:20) %>%
+  mutate(twenty = "top") 
 
 # Sort bottom 10 highest rate After
-ccgAfter_bot10 <- junJulCCG %>% 
+ccgAfter_bot20 <- junJulCCG %>% 
   filter(!is.na(popJul)) %>%
   arrange(percJul) %>%
-  slice(1:10) %>%
-  mutate(ten = "bottom")
+  slice(1:20) %>%
+  mutate(twenty = "bottom")
 
 # Combine
-ccgAfter <-rbind(ccgAfter_top10, ccgAfter_bot10) %>%
+ccgAfter <-rbind(ccgAfter_top20, ccgAfter_bot20) %>%
   arrange(-percJun)
 
 
 write_csv(ccgAfter, here("output","tables", "ccg_after.csv"))
 
 # Sort by lowest/highest increase
-# Sort top 10 highest increase
-ccgIncrease_top10 <- junJulCCG %>% 
+# Sort top 20 highest increase
+ccgIncrease_top20 <- junJulCCG %>% 
   filter(!is.na(popJul)) %>%
   arrange(-percChange) %>%
-  slice(1:10) %>%
-  mutate(ten = "top") 
+  slice(1:20) %>%
+  mutate(twenty = "top") 
 
-# Sort top 10 lowest increase
-ccgIncrease_bot10 <- junJulCCG %>% 
+# Sort top 20 lowest increase
+ccgIncrease_bot20 <- junJulCCG %>% 
   filter(!is.na(popJul)) %>%
   arrange(percChange) %>%
-  slice(1:10) %>%
-  mutate(ten = "bottom")
+  slice(1:20) %>%
+  mutate(twenty = "bottom")
 
-ccgIncrease <- rbind(ccgIncrease_top10, ccgIncrease_bot10) %>% 
+ccgIncrease <- rbind(ccgIncrease_top20, ccgIncrease_bot20) %>% 
   arrange(-percChange) 
 
 write_csv(ccgIncrease, here("output","tables", "ccg_increase.csv"))
 
 # CCG before and after June/July
-# Sort top 10 highest rate Before
+# Sort top 20 highest rate Before
 ccgBefore_top20 <- junJulCCG %>% 
   filter(!is.na(popJul)) %>%
   arrange(-percJul) %>%
   slice(1:20) %>%
   mutate(ten = "top") 
 
-# Sort bottom 10 highest rate Before
+# Sort bottom 20 highest rate Before
 ccgBefore_bot20 <- junJulCCG %>% 
   filter(!is.na(popJul)) %>%
   arrange(percJul) %>%
@@ -228,12 +227,13 @@ ccg_20 <- rbind(ccgBefore_bot20,ccgBefore_top20)
 
 plot <-ccg_20 %>%
   filter(orgName != "Unallocated") %>% 
-  mutate(ten = ifelse(ten == "bottom", "Lowest 20 opt-outs", "Highest 20 opt-outs")) %>% 
-  ggplot(aes(percJul,reorder(orgName, percJul), size = percChange, col = ten)) +
+  mutate(orgName = str_sub(orgName, 1, str_length(orgName)-3)) %>% 
+  mutate(twenty = ifelse(ten == "bottom", "Lowest 20 opt-outs", "Highest 20 opt-outs")) %>% 
+  ggplot(aes(percJul,reorder(orgName, percJul), size = percChange, col = twenty)) +
   geom_point() +
   theme_bw() +
   xlab('Opt-out %') +
-  ylab('Clinical commissioning group') +
+  ylab('Clinical commissioning group (CCG)') +
   geom_hline(yintercept = 20.5, lty = 2) +
   scale_x_continuous(breaks = seq(0, 12, by = 3), limits = c(0,12)) +
   labs(size ="Increase (%)", color = "Rank" ) +
