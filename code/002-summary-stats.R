@@ -183,7 +183,7 @@ ccgAfter_bot20 <- junJulCCG %>%
 
 # Combine
 ccgAfter <-rbind(ccgAfter_top20, ccgAfter_bot20) %>%
-  arrange(-percJun)
+  arrange(-percJul)
 
 
 write_csv(ccgAfter, here("output","tables", "ccg_after.csv"))
