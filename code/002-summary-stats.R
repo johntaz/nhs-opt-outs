@@ -108,6 +108,12 @@ ggsave(combined,
               "opt-out-age-sex-combined.png"),
        width=20, height=15, units="cm")
 
+ggsave(combined, 
+       filename = 
+         here("output", "figs", 
+              "opt-out-age-sex-combined.tiff"),
+       width=20, height=15, units="cm")
+
 # June - July 2021 - ccg (Unallocated included for table but not plot)
 list <- c("England", "North East and Yorkshire", "North West", "East of England", "Midlands", "South East", "South West", "London")
 junJulCCG <- dashboardData %>% 
@@ -136,7 +142,6 @@ write_csv(junJulDescriptives, here("output","tables", "overall_before_after.csv"
 
 plot <-junJulCCG %>%
   filter(orgName != "Unallocated") %>% 
-  filter()
   ggplot(aes(percJun,reorder(orgName, percJun))) +
   geom_segment(aes(yend = orgName, x = percJul, xend = percJun), colour="blue") +
   geom_point(colour="blue", fill = "blue") +
@@ -245,4 +250,9 @@ ggsave(plot,
        filename = 
          here("output", "figs", 
               "ccg-top-20.png"),
+       width=25, height=25, units="cm")
+ggsave(plot, 
+       filename = 
+         here("output", "figs", 
+              "ccg-top-20.tiff"),
        width=25, height=25, units="cm")

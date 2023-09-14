@@ -77,7 +77,7 @@ plotRank2 <- ggplot(postCodeOpt2, aes(x = imdRank, y = rate)) +
 
 plotRank2
 
- # save
+# save
 ggsave(plotRank2, 
        filename = 
          here("output", "figs", 
@@ -140,6 +140,12 @@ ggsave(combined,
        filename = 
          here("output", "figs", 
               "opt-out-postcode-imd-combined.png"),
+       width=20, height=15, units="cm")
+
+ggsave(combined, 
+       filename = 
+         here("output", "figs", 
+              "opt-out-postcode-imd-combined.tiff"),
        width=20, height=15, units="cm")
 
 summ <- postCodeOpt2 %>% 
