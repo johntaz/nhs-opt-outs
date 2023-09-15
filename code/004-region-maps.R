@@ -115,109 +115,118 @@ junJulCCG3 <- junJulCCG %>%
   select(ccg, percJul)
 
 # CCG shapefile
-localCCG <- readOGR(dsn = here("data"), layer = "Clinical_Commissioning_Groups_(April_2021)_EN_BUC")
-
-glimpse(localCCG)
-
-localCCGTidy <- tidy(localCCG)
-
-plot <- ggplot(localCCGTidy, aes(x = long, y= lat, group =group)) +   
-  geom_polygon(color = "black", size = 0.1, fill = "lightgrey") +
-  coord_equal() +
-  theme_minimal()
-
-plot
-
-localCCG$id <- row.names(localCCG)
-
-localCCGTidy <- left_join(localCCGTidy, localCCG@data) %>% 
-  mutate(ccg = as.character(CCG21NM)) #CCG21NM or CCG21CD
-
-# 1. percentage changee
-localCCGTidy2 <- left_join(localCCGTidy, junJulCCG2) %>%
-  mutate(percChange = ifelse(ccg=="NHS Herts Valleys CCG", 69.84204, percChange)) %>% 
-  mutate(percChange = ifelse(ccg=="NHS Herefordshire and Worcestershire CCG", 65.90978, percChange)) 
+if(file.exists(here("data/CCG_APR_2021_EN_BFC.shp")) == FALSE){
+  stop("You need to download the shapefile `CCG_APR_2021_EN_BFC` from the world wide web")
+}else{
+  localCCG <- readOGR(dsn = here("data"), layer = "CCG_APR_2021_EN_BFC")
   
-plotCCG <- ggplot(localCCGTidy2, aes(x = long, y= lat, group =group, fill = percChange)) +   
-  geom_polygon(color = "black", size = 0.1) +
-  coord_equal() +
-  theme_void() +
-  scale_fill_gradient(low='white', high='blue', limits=c(10, 220), name="Increase (%)") +
-  theme(
-    text = element_text(color = "#22211d"), 
-    #plot.background = element_rect(fill = "#f5f5f4", color = NA), 
-    #panel.background = element_rect(fill = "#f5f5f4", color = NA), 
-    #legend.background = element_rect(fill = "#f5f5f4", color = NA),
-    plot.background = element_rect(fill = "#FFFFFF", color = NA), 
-    panel.background = element_rect(fill = "#FFFFFF", color = NA), 
-    legend.background = element_rect(fill = "#FFFFFF", color = NA),
-    #plot.title = element_text(size= 22, hjust=0.5, color = "#4e4d47", margin = margin(b = -0.1, t = 0.4, l = 2, unit = "cm")),
-    #plot.subtitle = element_text(size= 13, hjust=0.5, color = "#4e4d47", margin = margin(b = -0.1, t = 0.4, l = 2, unit = "cm")),
-    legend.position = c(0.2, 0.50)
-  ) 
-
-plotCCG
-
-# save
-ggsave(plotCCG, 
-       filename = 
-         here("output", "figs", 
-              "opt-out-ccg-increase.png"),
-       width=15, height=15, units="cm")
-
-
-# Compare CCG data
-ccgCompare <- localCCGTidy %>% 
-  group_by(ccg) %>% 
-  slice(1)  %>% 
-  ungroup() %>%
-  select(ccg) %>% 
-  mutate(ccgTidy = 1)
-
-ccgCompare2 <- junJulCCG2 %>%
-  group_by(ccg) %>% 
-  slice(1) %>% 
-  select(ccg, percChange) %>%
-  ungroup() %>% 
-  mutate(optout = 1) %>% 
-  left_join(ccgCompare)
-
-# No data for NHS Shropshire, Telford and Wrekin CCG
-
-# 2. highest rate july
-
-localCCGTidy3 <- left_join(localCCGTidy, junJulCCG3) %>%
-  mutate(percJul = ifelse(ccg=="NHS Herts Valleys CCG", 3.795164, percJul)) %>% 
-  mutate(percJul = ifelse(ccg=="NHS Herefordshire and Worcestershire CCG", 2.476188, percJul)) 
-
-plotJulyCCG <- ggplot(localCCGTidy3, aes(x = long, y= lat, group =group, fill = percJul)) +   
-  geom_polygon(color = "black", size = 0.1) +
-  coord_equal() +
-  theme_void() +
-  scale_fill_gradient(low='white', high='blue', limits=c(0, 12), name="Opt-Outs (%)") +
-  theme(
-    text = element_text(color = "#22211d"), 
-    plot.background = element_rect(fill = "#FFFFFF", color = NA), 
-    panel.background = element_rect(fill = "#FFFFFF", color = NA), 
-    legend.background = element_rect(fill = "#FFFFFF", color = NA),
-    legend.position = c(0.2, 0.50)
-  ) 
-
-plotJulyCCG
-
-# save
-ggsave(plotJulyCCG, 
-       filename = 
-         here("output", "figs", 
-              "opt-out-ccg-july.png"),
-       width=15, height=15, units="cm")
-
-combined <- 
-  cowplot::plot_grid(plotCCG, plotJulyCCG, labels = c('A', 'B'), ncol=2, nrow=1)
-
-combined
-ggsave(combined, 
-       filename = 
-         here("output", "figs", 
-              "opt-out-ccg-combined.png"),
-       width=20, height=15, units="cm")
+  glimpse(localCCG)
+  
+  localCCGTidy <- tidy(localCCG)
+  
+  plot <- ggplot(localCCGTidy, aes(x = long, y= lat, group =group)) +   
+    geom_polygon(color = "black", size = 0.1, fill = "lightgrey") +
+    coord_equal() +
+    theme_minimal()
+  
+  plot
+  
+  localCCG$id <- row.names(localCCG)
+  
+  localCCGTidy <- left_join(localCCGTidy, localCCG@data) %>% 
+    mutate(ccg = as.character(CCG21NM)) #CCG21NM or CCG21CD
+  
+  # 1. percentage changee
+  localCCGTidy2 <- left_join(localCCGTidy, junJulCCG2) %>%
+    mutate(percChange = ifelse(ccg=="NHS Herts Valleys CCG", 69.84204, percChange)) %>% 
+    mutate(percChange = ifelse(ccg=="NHS Herefordshire and Worcestershire CCG", 65.90978, percChange)) 
+    
+  plotCCG <- ggplot(localCCGTidy2, aes(x = long, y= lat, group =group, fill = percChange)) +   
+    geom_polygon(color = "black", size = 0.1) +
+    coord_equal() +
+    theme_void() +
+    scale_fill_gradient(low='white', high='blue', limits=c(10, 220), name="Increase (%)") +
+    theme(
+      text = element_text(color = "#22211d"), 
+      #plot.background = element_rect(fill = "#f5f5f4", color = NA), 
+      #panel.background = element_rect(fill = "#f5f5f4", color = NA), 
+      #legend.background = element_rect(fill = "#f5f5f4", color = NA),
+      plot.background = element_rect(fill = "#FFFFFF", color = NA), 
+      panel.background = element_rect(fill = "#FFFFFF", color = NA), 
+      legend.background = element_rect(fill = "#FFFFFF", color = NA),
+      #plot.title = element_text(size= 22, hjust=0.5, color = "#4e4d47", margin = margin(b = -0.1, t = 0.4, l = 2, unit = "cm")),
+      #plot.subtitle = element_text(size= 13, hjust=0.5, color = "#4e4d47", margin = margin(b = -0.1, t = 0.4, l = 2, unit = "cm")),
+      legend.position = c(0.2, 0.50)
+    ) 
+  
+  plotCCG
+  
+  # save
+  ggsave(plotCCG, 
+         filename = 
+           here("output", "figs", 
+                "opt-out-ccg-increase.png"),
+         width=15, height=15, units="cm")
+  
+  
+  # Compare CCG data
+  ccgCompare <- localCCGTidy %>% 
+    group_by(ccg) %>% 
+    slice(1)  %>% 
+    ungroup() %>%
+    select(ccg) %>% 
+    mutate(ccgTidy = 1)
+  
+  ccgCompare2 <- junJulCCG2 %>%
+    group_by(ccg) %>% 
+    slice(1) %>% 
+    select(ccg, percChange) %>%
+    ungroup() %>% 
+    mutate(optout = 1) %>% 
+    left_join(ccgCompare)
+  
+  # No data for NHS Shropshire, Telford and Wrekin CCG
+  
+  # 2. highest rate july
+  
+  localCCGTidy3 <- left_join(localCCGTidy, junJulCCG3) %>%
+    mutate(percJul = ifelse(ccg=="NHS Herts Valleys CCG", 3.795164, percJul)) %>% 
+    mutate(percJul = ifelse(ccg=="NHS Herefordshire and Worcestershire CCG", 2.476188, percJul)) 
+  
+  plotJulyCCG <- ggplot(localCCGTidy3, aes(x = long, y= lat, group =group, fill = percJul)) +   
+    geom_polygon(color = "black", size = 0.1) +
+    coord_equal() +
+    theme_void() +
+    scale_fill_gradient(low='white', high='blue', limits=c(0, 12), name="Opt-Outs (%)") +
+    theme(
+      text = element_text(color = "#22211d"), 
+      plot.background = element_rect(fill = "#FFFFFF", color = NA), 
+      panel.background = element_rect(fill = "#FFFFFF", color = NA), 
+      legend.background = element_rect(fill = "#FFFFFF", color = NA),
+      legend.position = c(0.2, 0.50)
+    ) 
+  
+  plotJulyCCG
+  
+  # save
+  ggsave(plotJulyCCG, 
+         filename = 
+           here("output", "figs", 
+                "opt-out-ccg-july.png"),
+         width=15, height=15, units="cm")
+  
+  combined <- 
+    cowplot::plot_grid(plotCCG, plotJulyCCG, labels = c('A', 'B'), ncol=2, nrow=1)
+  
+  combined
+  ggsave(combined, 
+         filename = 
+           here("output", "figs", 
+                "opt-out-ccg-combined.png"),
+         width=20, height=15, units="cm")
+  ggsave(combined, 
+         filename = 
+           here("output", "figs", 
+                "opt-out-ccg-combined.tiff"),
+         width=20, height=15, units="cm")
+}

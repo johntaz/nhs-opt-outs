@@ -17,7 +17,6 @@ df <- data.frame(
   age = sample(5:95, size = n, replace = TRUE)
 )
 
-prob_optout_verylikely <- 0.2
 prob_optout_likely <- 0.05
 prob_optout_unlikely <- 0.01
 
@@ -121,8 +120,8 @@ or_estimates <- bind_rows(
 )
 plot_df <- bind_cols(plot_df, or_estimates)
 write.csv(plot_df, paste0(output_directory,"opt-out-plot-data.csv"))
-jpeg(paste0(output_directory, "opt-out-plot.jpeg"), width = 8, height = 3, units = "in", res = 800)
-ggplot(plot_df, aes(x = x, y = or, ymin = lci, ymax = uci)) +
+
+p1 <- ggplot(plot_df, aes(x = x, y = or, ymin = lci, ymax = uci)) +
   geom_hline(yintercept = 1, lty = 2, col = "gray60") +
   geom_linerange() +
   facet_grid(rows = vars(model), switch = "y") +
@@ -140,6 +139,11 @@ ggplot(plot_df, aes(x = x, y = or, ymin = lci, ymax = uci)) +
         strip.text.y.left = element_text(size = 10, angle = 0, hjust = 0, vjust = 0.5),
         axis.text.y = element_blank(),
         plot.title.position = "plot")
+tiff(paste0(output_directory, "opt-out-plot.tiff"), width = 8, height = 3, units = "in", res = 800)
+  p1
+dev.off()
+jpeg(paste0(output_directory, "opt-out-plot.tiff"), width = 8, height = 3, units = "in", res = 800)
+  p1
 dev.off()
 
 tab <- sim$tab2x2
@@ -199,7 +203,7 @@ p2 <- ggplot(opt_out_line, aes(x=opt_outs, y = opt_out_pwr)) +
        y = "Power of comparison of 2 proportions", 
        caption = "Population size = 20 million, Observed rate = 1.22/100,000 person-years, null hypothesis value = 1, sig. level = 5%") + 
   theme_classic()
-jpeg( paste0(output_directory, "opt-out-power-singlerate.jpeg"), width = 7, height = 3, units = "in", res = 800)
+tiff( paste0(output_directory, "opt-out-power-singlerate.tiff"), width = 7, height = 3, units = "in", res = 800)
   p2
 dev.off()
 
@@ -207,3 +211,4 @@ dev.off()
 samplesize_n_for_singlerate(base_n*1) # at 100%
 samplesize_n_for_singlerate(base_n*0.95) # at 5% opt-out
 samplesize_n_for_singlerate(base_n*0.8) # at 20% opt-out
+
