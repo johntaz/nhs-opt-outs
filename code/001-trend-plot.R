@@ -73,10 +73,7 @@ plot <- overalTrend %>%
              color = "black", 
              lwd = 0.7, 
              linetype = "dashed") +
-  scale_y_continuous(
-    "Weekly Opt-Out %", 
-    sec.axis = sec_axis(~ . * 100, name = "Google Trend Interest") 
-                                  ) +
+  scale_y_continuous("Weekly Opt-Out %") +
   geom_text(x=as.numeric(as.Date("2021-05-20")), y=0.80, label="Media") +
   geom_text(x=as.numeric(as.Date("2021-07-08")), y=0.80, label="1st Deadline") +
   geom_text(x=as.numeric(as.Date("2021-10-10")), y=0.80, label="2nd Deadline") 
@@ -87,16 +84,21 @@ googleTrends <- googleTrends %>%
   mutate(perc = interest/100) %>% 
   mutate(date = dmy(Week)) %>% 
   mutate(date = date + 3) %>% # to align weeks with  opt-out data
-  filter(date >= "2021-05-12" & date <="2021-11-01")
+  filter(date >= "2021-05-12" & date <="2021-11-01") 
+  
 
 # Add google trends
 trendPlot <- plot + geom_line(data = googleTrends, aes(x = date, y = perc),  
                    color = "gold", 
                    lwd = 1.5
-)
+) +
+  scale_y_continuous(
+    "Weekly Opt-Out %", 
+    sec.axis = sec_axis(~ . * 100, name = "Google Trend Interest") 
+  ) 
 trendPlot
 # save
-ggsave(trendPlot, 
+ggsave(plot, 
        filename = 
          here("output", "figs", 
                "opt-out-trends.png"),
