@@ -61,7 +61,7 @@ plot <- overalTrend %>%
         legend.title = element_text(size = 12),
         legend.background = element_rect(fill = "white", colour = NA)
   ) +
-  geom_vline(xintercept = as.numeric(as.Date("2021-05-30")), 
+  geom_vline(xintercept = as.numeric(as.Date("2021-05-12")), 
              color = "black", 
              lwd = 0.7, 
              linetype = "dashed") + 
@@ -74,10 +74,12 @@ plot <- overalTrend %>%
              lwd = 0.7, 
              linetype = "dashed") +
   scale_y_continuous("Weekly Opt-Out %") +
-  geom_text(x=as.numeric(as.Date("2021-05-20")), y=0.80, label="Media") +
-  geom_text(x=as.numeric(as.Date("2021-07-08")), y=0.80, label="1st Deadline") +
-  geom_text(x=as.numeric(as.Date("2021-10-10")), y=0.80, label="2nd Deadline") 
+  geom_text(x=as.numeric(as.Date("2021-05-27")), y=0.965, label="GPDPR Launch") +
+  geom_text(x=as.numeric(as.Date("2021-07-08")), y=0.965, label="1st Deadline") +
+  geom_text(x=as.numeric(as.Date("2021-10-10")), y=0.965, label="2nd Deadline") 
   
+
+plot
 
 # Clean google trend data
 googleTrends <- googleTrends %>% 
