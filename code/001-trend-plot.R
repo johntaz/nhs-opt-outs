@@ -107,5 +107,11 @@ ggsave(plot,
        width=20, height=14, units="cm")
 
 
+ggsave(plot, 
+       filename = 
+         here("output", "figs", 
+              "opt-out-trends.tiff"),
+       width=20, height=14, units="cm")
+
 
 
